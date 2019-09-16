@@ -23,7 +23,7 @@ final class datastorage
 	// ----------------------------------------------------------------------------------------
 	private $storage_type;	// Type of storage server; currently implemented: "fileserver"
 	private $storage_name;	// Name of storage server; currently implemented: "retailer", "user" & "product"
-	private $data_type;			// Type of data to be stored; currently implemented: "rawdata", e.g. from CURL()
+	private $data_type;	// Type of data to be stored; currently implemented: "rawdata", e.g. from CURL()
 	// ----------------------------------------------------------------------------------------
 	
 	// ----------------------------------------------------------------------------------------
@@ -31,9 +31,9 @@ final class datastorage
 	// ----------------------------------------------------------------------------------------
 	public function __construct($storage_type, $storage_name, $data_type)
 	{
-		$this->storage_type								=			$storage_type;
-		$this->storage_name								=			$storage_name;
-		$this->data_type									=			$data_type;
+		$this->storage_type	=	$storage_type;
+		$this->storage_name	=	$storage_name;
+		$this->data_type	=	$data_type;
 	}
 	// ----------------------------------------------------------------------------------------
 	
@@ -72,51 +72,51 @@ final class datastorage
 		// Perform connection handling for storage type "fileserver"
 		if (strcmp($this->getStorageType(), "fileserver") == 0)
 		{
-			global $fileserver;		// Variable is defined in the config file imported above
-			$ftp_info									=			array();
-			$ftp_handle								=			"";
+			global $fileserver;	// Variable is defined in the config file imported above
+			$ftp_info	=	array();
+			$ftp_handle	=	"";
 			
 			// Assign server connect info (credentials, ...) with respect to storage name
 			switch ($this->getStorageName())
 			{
 				case "retailer":
-					$ftp_info							=			$fileserver['retailer'];
+					$ftp_info	=	$fileserver['retailer'];
 					break;
 					
 				case "user":
-					$ftp_info							=			$fileserver['user'];
+					$ftp_info	=	$fileserver['user'];
 					break;
 					
 				case "product":
-					$ftp_info							=			$fileserver['product'];
+					$ftp_info	=	$fileserver['product'];
 					break;
 			}
 			
 			if (!empty($ftp_info['server']))
 			{			
 				// Connect to FTP server based on information imported from config file
-				$ftp_handle							=			ftp_connect("$ftp_info[server]");
+				$ftp_handle		=	ftp_connect("$ftp_info[server]");
 						
 				// Log in to FTP server using credentials
-				$login_result						=			ftp_login($ftp_handle, "$ftp_info[username]", "$ftp_info[password]");
+				$login_result		=	ftp_login($ftp_handle, "$ftp_info[username]", "$ftp_info[password]");
 						
 				// Check, if connection has been established successfully
 				if ((!$ftp_handle) || (!$login_result))
 				{
-					$ftp_handle 					= 		Null;
+					$ftp_handle 	= 	Null;
 				}
 				else
 				{
 					// Change directory to target directory, if required
 					if (!empty($ftp_info['filedir']))
 					{
-						$chgdir							=			ftp_chdir($ftp_handle, "$ftp_info[filedir]");
+						$chgdir			=	ftp_chdir($ftp_handle, "$ftp_info[filedir]");
 						if (!$chgdir)
 						{
 						}
 						else
 						{
-							$new_dir					=			ftp_pwd($ftp_handle);
+							$new_dir	=	ftp_pwd($ftp_handle);
 						}
 					}
 				}
@@ -137,7 +137,7 @@ final class datastorage
 		if ($connection)
 		{
 			// Write file to target directory
-			$upload							=					ftp_put($connection, "$target", "$data", FTP_BINARY);
+			$upload		=	ftp_put($connection, "$target", "$data", FTP_BINARY);
 					
 			// Check, if upload was successful
 			if (!$upload)
@@ -174,11 +174,11 @@ final class datastorage
 	// ----------------------------------------------------------------------------------------
 	public function storeData($data, $target)
 	{
-		$result			=			"";
-		global $fileserver;			// Variable is defined in the config file imported above
+		$result			=	"";
+		global $fileserver;		// Variable is defined in the config file imported above
 		
 		fwrite(fopen($target, "w"), $data);
-		$result			=			$this->uploadFileToServer($this->connectToServer(), $target, $target);
+		$result			=	$this->uploadFileToServer($this->connectToServer(), $target, $target);
 		unlink($target);
 		
 		return $result;
